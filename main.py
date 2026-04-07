@@ -1,8 +1,8 @@
 """
 main.py — Entry point.
 
-Phase 2: live camera feed with YOLOv8 person detection.
-Press Q to quit.
+Phase 3: YOLOv8-Pose — skeleton overlay + keypoint logging.
+Press Q to quit. Set LOG_KEYPOINTS=True to print raw joints each frame.
 """
 
 import logging
@@ -12,8 +12,10 @@ import cv2
 from vision.camera import Camera
 from vision.detector import PersonDetector
 
+LOG_KEYPOINTS = False  # flip to True to stream raw keypoint data to console
+
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG if LOG_KEYPOINTS else logging.INFO,
     format="%(asctime)s %(levelname)-8s %(name)s: %(message)s",
 )
 log = logging.getLogger(__name__)
@@ -22,10 +24,10 @@ WINDOW_TITLE = "Person Tracker — Q to quit"
 
 
 def run():
-    detector = PersonDetector()
+    detector = PersonDetector()  # defaults to yolov8n-pose.pt
 
     with Camera(device_index=0) as cam:
-        log.info("Starting detection loop — press Q in the window to quit")
+        log.info("Starting pose detection loop — press Q in the window to quit")
         prev_count = -1
 
         while True:
@@ -36,7 +38,6 @@ def run():
 
             result = detector.detect(frame)
 
-            # Log count only when it changes to avoid log spam.
             if result.person_count != prev_count:
                 log.info("%d %s detected",
                          result.person_count,
