@@ -1,50 +1,93 @@
 hue:
-  room: "Living room"       # openhue room name — run `openhue get room` to list
-
+  room: Living room
 detection:
-  model: "yolov8s-pose.pt"  # swap to yolov8s-pose.pt for higher accuracy
+  model: yolov8s-pose.pt
   confidence: 0.4
   camera_index: 0
-
 gestures:
-  squat_hip_knee_ratio: 0.85   # hip_y / knee_y threshold; raise = stricter squat
-  hands_raised_min_wrists: 1   # 1 = either hand; 2 = both hands must be up
-  huddle_left_threshold: 0.40  # COM_x below this fraction → huddle left
-  huddle_right_threshold: 0.60 # COM_x above this fraction → huddle right
-  huddle_min_people: 2         # minimum people to call a huddle
-  still_movement_thresh: 0.015 # normalised avg displacement/frame to count as still
-  still_duration: 4.0          # seconds of low movement before STILLNESS triggers
-
+  squat_hip_knee_ratio: 0.85
+  hands_raised_min_wrists: 1
+  huddle_left_threshold: 0.4
+  huddle_right_threshold: 0.6
+  huddle_min_people: 2
+  still_movement_thresh: 0.015
+  still_duration: 4.0
 states:
-  squat_trigger_ratio: 0.50   # fraction of detected people that must be squatting
-  hands_up_ratio: 0.50        # fraction of detected people with hands raised
-  min_people: 1               # ignore gestures if fewer than this many people detected
-
+  squat_trigger_ratio: 0.5
+  hands_up_ratio: 0.5
+  min_people: 1
   idle:
-    colour: [30, 20, 70]
+    colour:
+    - 30
+    - 20
+    - 70
     min_hold: 3.0
-
   stillness:
-    colour: [30, 30, 20]
+    colour:
+    - 30
+    - 30
+    - 20
     min_hold: 8.0
-
   huddle_left:
-    colour: [210, 80, 80]
+    colour:
+    - 210
+    - 80
+    - 80
     min_hold: 4.0
-
   huddle_right:
-    colour: [30, 90, 80]
+    colour:
+    - 30
+    - 90
+    - 80
     min_hold: 4.0
-
   squat_active:
-    colour: [280, 100, 90]
+    colour:
+    - 280
+    - 100
+    - 90
     min_hold: 5.0
-
   hands_up:
-    colour: [0, 0, 100]
+    colour:
+    - 0
+    - 0
+    - 100
     min_hold: 4.0
-
 app:
-  headless: false             # true = no OpenCV window (for kiosk/exhibition)
-  log_level: INFO             # DEBUG streams raw keypoint data
-  events_csv: "events.csv"   # path for CSV event log; set to "" to disable
+  headless: false
+  log_level: INFO
+  events_csv: events.csv
+lamp_zones:
+- label: right
+  hue_light: Lamp 2
+  frame_x: 0.671
+  frame_y: 0.875
+  radius: 0.18
+  colour_active: &id001
+  - 120
+  - 100
+  - 90
+  colour_idle: &id002
+  - 30
+  - 20
+  - 40
+- label: left
+  hue_light: Lamp 1
+  frame_x: 0.366
+  frame_y: 0.824
+  radius: 0.18
+  colour_active: *id001
+  colour_idle: *id002
+- label: Top left
+  hue_light: Light 3
+  frame_x: 0.308
+  frame_y: 0.282
+  radius: 0.18
+  colour_active: *id001
+  colour_idle: *id002
+- label: "\e"
+  hue_light: "\e"
+  frame_x: 0.611
+  frame_y: 0.641
+  radius: 0.18
+  colour_active: *id001
+  colour_idle: *id002

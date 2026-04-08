@@ -29,16 +29,30 @@ log = logging.getLogger(__name__)
 DEFAULT_ROOM: Optional[str] = cfg["hue"]["room"] or None
 
 OPENHUE_BIN = "openhue"
+TRANSITION_TIME = "1s"
 
 
 # ---------------------------------------------------------------------------
 # Internal helpers
 # ---------------------------------------------------------------------------
 
+def _shell_repr(args: list[str]) -> str:
+    """Format a command list as a readable shell string, quoting args with spaces."""
+    parts = []
+    for a in args:
+        parts.append(f'"{a}"' if " " in a else a)
+    return " ".join(parts)
+
+
 def _run(args: list[str]) -> bool:
-    """Run an openhue command. Returns True on success, False on failure."""
+    """
+    Run an openhue command. Returns True on success, False on failure.
+
+    subprocess.run with a list passes each element as its own argv — no
+    shell quoting needed even when names contain spaces (e.g. "Lamp 1").
+    """
     cmd = [OPENHUE_BIN] + args
-    log.debug("CMD: %s", " ".join(cmd))
+    log.debug("CMD: %s", _shell_repr(cmd))
     result = subprocess.run(cmd, capture_output=True, text=True)
     if result.returncode != 0:
         log.error("openhue error (exit %d): %s", result.returncode, result.stderr.strip())
@@ -99,28 +113,30 @@ def set_color(
     """Set colour (HSB) and turn lights on."""
     rgb = _hsb_to_rgb_hex(hue, saturation, brightness)
     log.info("set_color hue=%.0f sat=%.0f bri=%.0f → %s", hue, saturation, brightness, rgb)
-    cmd = _build_set_cmd(room, ["--on", "--rgb", rgb, "--brightness", str(brightness)])
+    cmd = _build_set_cmd(room, ["--on", "--rgb", rgb, "--brightness", str(brightness),
+                                "--transition-time", TRANSITION_TIME])
     return _run(cmd) if cmd else False
 
 
 def lights_on(room: Optional[str] = None) -> bool:
     """Turn lights on."""
     log.info("lights_on")
-    cmd = _build_set_cmd(room, ["--on"])
+    cmd = _build_set_cmd(room, ["--on", "--transition-time", TRANSITION_TIME])
     return _run(cmd) if cmd else False
 
 
 def lights_off(room: Optional[str] = None) -> bool:
     """Turn lights off."""
     log.info("lights_off")
-    cmd = _build_set_cmd(room, ["--off"])
+    cmd = _build_set_cmd(room, ["--off", "--transition-time", TRANSITION_TIME])
     return _run(cmd) if cmd else False
 
 
 def set_brightness(brightness: float, room: Optional[str] = None) -> bool:
     """Set brightness (0-100) without changing colour."""
     log.info("set_brightness %.0f", brightness)
-    cmd = _build_set_cmd(room, ["--on", "--brightness", str(brightness)])
+    cmd = _build_set_cmd(room, ["--on", "--brightness", str(brightness),
+                                "--transition-time", TRANSITION_TIME])
     return _run(cmd) if cmd else False
 
 
@@ -128,5 +144,25 @@ def set_color_temperature(mirek: int, room: Optional[str] = None) -> bool:
     """Set colour temperature in Mirek (153 = cool white, 500 = warm white)."""
     mirek = max(153, min(500, mirek))
     log.info("set_color_temperature %d mirek", mirek)
-    cmd = _build_set_cmd(room, ["--on", "--temperature", str(mirek)])
+    cmd = _build_set_cmd(room, ["--on", "--temperature", str(mirek),
+                                "--transition-time", TRANSITION_TIME])
     return _run(cmd) if cmd else False
+
+
+# ---------------------------------------------------------------------------
+# Per-light API (lamp mode)
+# ---------------------------------------------------------------------------
+
+def set_light_color(light_name: str, hue: float, saturation: float, brightness: float) -> bool:
+    """Set a specific light by name to an HSB colour."""
+    rgb = _hsb_to_rgb_hex(hue, saturation, brightness)
+    log.debug("set_light_color '%s' hue=%.0f sat=%.0f bri=%.0f → %s",
+              light_name, hue, saturation, brightness, rgb)
+    return _run(["set", "light", light_name, "--on", "--rgb", rgb,
+                 "--brightness", str(brightness), "--transition-time", TRANSITION_TIME])
+
+
+def set_light_off(light_name: str) -> bool:
+    """Turn a specific light off by name."""
+    log.debug("set_light_off '%s'", light_name)
+    return _run(["set", "light", light_name, "--off", "--transition-time", TRANSITION_TIME])
