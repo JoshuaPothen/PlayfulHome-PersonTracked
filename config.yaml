@@ -56,11 +56,20 @@ app:
   headless: false
   log_level: INFO
   events_csv: events.csv
+lamp_mode:
+  idle_brightness: 20        # brightness % for lamps with no one nearby (same hue as count)
+  empty_colour: [30, 20, 15] # HSB shown on all lamps when no one is in the frame at all
+  # Colour steps by person count. Last entry covers all higher counts.
+  person_colours:
+    1: [120, 100, 90]   # green
+    2: [210, 100, 90]   # blue
+    3: [280, 100, 90]   # purple
+    4: [30,  100, 90]   # orange (4+)
 lamp_zones:
-- label: right
-  hue_light: Lamp 2
-  frame_x: 0.671
-  frame_y: 0.875
+- label: Left
+  hue_light: Lamp 1
+  frame_x: 0.69
+  frame_y: 0.781
   radius: 0.18
   colour_active: &id001
   - 120
@@ -70,24 +79,24 @@ lamp_zones:
   - 30
   - 20
   - 40
-- label: left
-  hue_light: Lamp 1
-  frame_x: 0.366
-  frame_y: 0.824
+- label: Right
+  hue_light: Lamp 2
+  frame_x: 0.341
+  frame_y: 0.779
   radius: 0.18
   colour_active: *id001
   colour_idle: *id002
-- label: Top left
-  hue_light: Light 3
-  frame_x: 0.308
-  frame_y: 0.282
+- label: Top R
+  hue_light: Light 1
+  frame_x: 0.68
+  frame_y: 0.255
   radius: 0.18
   colour_active: *id001
   colour_idle: *id002
-- label: "\e"
-  hue_light: "\e"
-  frame_x: 0.611
-  frame_y: 0.641
+- label: Top L
+  hue_light: Light 2
+  frame_x: 0.361
+  frame_y: 0.255
   radius: 0.18
   colour_active: *id001
   colour_idle: *id002
