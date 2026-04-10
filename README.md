@@ -236,6 +236,8 @@ states:
 
 ## Lamp Mode — Interaction Patterns
 
+![LampMode1](https://github.com/user-attachments/assets/a160fb90-153a-4baf-b11b-598bc6a07a0d)
+
 Each physical lamp in the room is mapped to a zone in the camera frame. The system independently tracks each lamp zone.
 
 ### Proximity logic
