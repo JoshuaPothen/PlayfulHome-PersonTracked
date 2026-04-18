@@ -177,7 +177,7 @@ Press **Q** in the debug window (or **Ctrl-C** in the terminal) to quit.
 ---
 
 ## Crowd Mode — Interaction Patterns
-
+<img width="3840" height="2160" alt="CrowdMode_Squat_real" src="https://github.com/user-attachments/assets/9b040792-538e-45a9-8de9-754d031ba675" />
 The system detects six states. When multiple conditions are true simultaneously, the highest-priority state wins. Each state has a minimum hold time before transitioning, preventing flickering.
 
 ### State priority (highest → lowest)
@@ -192,15 +192,42 @@ The system detects six states. When multiple conditions are true simultaneously,
 | 5 | **IDLE** | Default | Soft warm white |
 
 ### Gesture reference
+<table>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/e12eb0b2-4828-4a5f-89f0-8b2102658a65" height="200"/></td>
+    <td><img src="https://github.com/user-attachments/assets/69e73536-8471-4b08-a9ef-d717a2a39291" height="200"/></td>
+  </tr>
+</table>
 
 **Squat**
 - Hip y-coordinate drops to ≥85% of knee y-coordinate (normalised frame height)
 - Proportion-based: needs 50% of detected people to trigger, so a solo performer can trigger it alone but one person in a group of 10 cannot
 - Cooldown: 5 seconds in state before transitioning out
 
+<table>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/72fd5e23-4336-4da4-84bf-5c848a427cc0" height="200"/></td>
+    <td><img src="https://github.com/user-attachments/assets/c5ef6d26-bc8d-415d-b338-4340b3441437" height="200"/></td>
+  </tr>
+</table>
+
 **Hands up**
 - Either wrist must be above the shoulder on the same side
 - Set `hands_raised_min_wrists: 2` in config to require both hands
+
+<table>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/753e2239-9d70-4623-b314-17eae08b9297" height="200"/></td>
+    <td><img src="https://github.com/user-attachments/assets/753e2239-9d70-4623-b314-17eae08b9297" height="200"/></td>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/947fcc0d-88ac-4cb8-833a-804fb9f3a642" height="200"/></td>
+    <td><img src="https://github.com/user-attachments/assets/67dc1e61-5dc6-44c8-9a0c-b22fa5539269" height="200"/></td>
+  </tr>
+</table>
 
 **Huddle left / right**
 - Calculates the mean x-position of all bounding box centres
